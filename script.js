@@ -21,17 +21,22 @@ const marker = L.marker([0, 0], { icon: issIcon }).addTo(mymap)
 
 const api_url = 'https://api.wheretheiss.at/v1/satellites/25544'
 
+let firstTime = true
+
 async function getISS() {
     const response = await fetch(api_url)
     const data = await response.json()
     const { latitude, longitude } = data
 
     marker.setLatLng([latitude, longitude])
-
+    if (firstTime) {
+        mymap.setView([latitude, longitude], 2)
+        firstTime = false
+    }
     const lat = document.querySelector('[data-lat]')
     const lon = document.querySelector('[data-lon]')
-    lat.textContent = latitude
-    lon.textContent = longitude
+    lat.textContent = latitude.toFixed(2)
+    lon.textContent = longitude.toFixed(2)
 }
 
 getISS()
@@ -49,3 +54,5 @@ getISS()
         msg.textContent = 'Oops, something went wrong...'
         msg.style.color = 'red'
     })
+
+setInterval(getISS, 1000);
